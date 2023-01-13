@@ -193,19 +193,125 @@ table.loc[table['Open'] == table['Close'], 'Candle'] = 'no change'
 #until the price is less than the first. Then the program sees the top. I take the largest value.
 
 
-#TODO
-#looking for support and resistance lines
+#wykrywam punkty wierzchołków i dołków
+for i in table.index:
+    try:
+        if table.loc[i-2]['Low']>table.loc[i]['Low'] and table.loc[i-1]['Low']>=table.loc[i]['Low'] and table.loc[i+1]['Low']>=table.loc[i]['Low'] and table.loc[i+2]['Low']>table.loc[i]['Low']:
+            #to będzie mój Support
+            indeks = table.loc[i-2:i+2]['Low'].idxmin()
+            #jeśli następna wartość będzie taka sama to podaję następną żeby dobrze wyrysować funkcję
+            if table.loc[indeks+1]['Low']==table.loc[indeks]['Low']:
+                table.at[indeks+1, 'Support'] = table.loc[indeks+1]['Low']
+            else:
+                table.at[indeks, 'Support'] = table.loc[indeks]['Low']
+        elif table.loc[i-2]['High']<table.loc[i]['High'] and table.loc[i-1]['High']<=table.loc[i]['High'] and table.loc[i+1]['High']<=table.loc[i]['High'] and table.loc[i+2]['High']<table.loc[i]['High']:
+            #to będzie mój Resistance
+            indeks = table.loc[i-2:i+2]['High'].idxmax()
+            #jeśli następna wartość będzie taka sama to podaję następną żeby dobrze wyrysować funkcję
+            if table.loc[indeks+1]['High']==table.loc[indeks]['High']:
+                table.at[indeks+1, 'Resistance'] = table.loc[indeks+1]['High']
+            else:
+                table.at[indeks, 'Resistance'] = table.loc[indeks]['High']
+    except:
+        next
 
 
-##while True:
-##	if tab.loc[i]['Candle'] == 'falling':
-##		maxi = tab.loc[i]['High']
-##		i=i+1
-##		while tab.loc[i]['High']<maxi and tab.loc[i+1]['High']<tab.loc[i]['High']
+
+
+#V-LAMBDA CONCEPTION
+#----------------------------------------#
+#an innovative concept that assumes that a set of, for example, two Support and one Resistance 
+#points forms a "Lambda formation", the slope of which can be measured by tilting the two Support points. 
+#Such a function can be carried further and examined to see if subsequent points also resist it. 
+#It gives then a solid basis for believing that it is a model trend line.
+
+v_lambda_matrix = table[['Support','Resistance']].copy()
+#v_lambda_matrix = v_lambda_matrix.dropna(how='all')
+i = v_lambda_matrix.index[-1]
+x3_last_position = i
+
+
+while i>=0:
+    i = x3_last_position
+    if i < 0:
+        print("mniejsze od 0")
+        break
+    #measure one, or the average of several right arms of the formation
+    if pd.notna(v_lambda_matrix.loc[i]['Support'])==True:
+        x1 = v_lambda_matrix.loc[i]['Support']
+        x1_index = i
+        y=1
+        i=i-1
+        if i < 0:
+            print("mniejsze od 0")
+            break
+        while pd.notna(v_lambda_matrix.loc[i]['Resistance'])==False:
+            print("prawa noga " + str(i))
+            if pd.notna(v_lambda_matrix.loc[i]['Support'])==True:
+                x1 = x1 + v_lambda_matrix.loc[i]['Support']
+                y=y+1
+            i=i-1
+            if i < 0:
+                print("mniejsze od 0")
+                break
+        x1=x1/y
+        if i < 0:
+            print("mniejsze od 0")
+            break
+        
+        #measure one, or the average of several formation vertices and zero the y-number
+        y = 0
+        if pd.notna(v_lambda_matrix.loc[i]['Resistance'])==True and pd.notna(v_lambda_matrix.loc[i]['Resistance'])==True:
+            x2 = v_lambda_matrix.loc[i]['Resistance']
+            x3 = v_lambda_matrix.loc[i]['Support']
+            x3_last_position = i
+        else:
+            while pd.notna(v_lambda_matrix.loc[i]['Support'])==False:
+                print("wierzchołek " + str(i))
+                if pd.notna(v_lambda_matrix.loc[i]['Resistance'])==True:
+                    x2 = v_lambda_matrix.loc[i]['Resistance']
+                    y=y+1
+                i=i-1
+                if i < 0:
+                    print("mniejsze od 0")
+                    break
+            x2=x2/y
+            if i < 0:
+                print("mniejsze od 0")
+                break
+
+        
+            #measure one, or the average of several left arms of the formation and zero the y-number
+            y=0
+            while pd.notna(v_lambda_matrix.loc[i]['Resistance'])==False:
+                print("lewa noga " + str(i))
+                if pd.notna(v_lambda_matrix.loc[i]['Support'])==True:
+                    x3 = v_lambda_matrix.loc[i]['Support']
+                    x3_last_position = i
+                    y=y+1
+                i=i-1
+                if i < 0:
+                    print("mniejsze od 0")
+                    break
+            x3=x3/y
+
+        if x1 < x3:
+            #rośnie
+            table.loc[x3_last_position:x1_index,['V-Lambda']] = 1
+        elif x1==x3:
+            table.loc[x3_last_position:x1_index,['V-Lambda']] = 0
+        elif x1 > x3:
+            table.loc[x3_last_position:x1_index,['V-Lambda']] = -1
+    else:
+        x3_last_position = x3_last_position - 1
+    x1=0; x2=0; x3=0
+
 
 
 
 #LINEAR FUNCTION calculation
+#----------------------------------------------#
+
 #I have to provide 5 values:
 #- x1, y1 - coordinates of the first vertex
 #- x2, y2 - coordinates of the second vertex
@@ -273,6 +379,9 @@ print('low_linear_model_price - ' + str(low_linear_model_price) + '\n')
 
 
 
+
+INDICATORS
+#------------------------------------#
 
 #all averages for closing prices
 #arithmetic mean
