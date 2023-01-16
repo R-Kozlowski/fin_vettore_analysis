@@ -1,13 +1,22 @@
 import os, bs4, time, send2trash, csv, smtplib, threading, requests, __future__
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-from lxml import html
-import urllib.request
-from datetime import datetime, date, time, timezone
 import pandas_ta as ta
+import urllib.request
+from lxml import html
+from datetime import datetime, date, time, timezone
 
-#żeby wysłać załącznik html
+
+#creating charts
+import plotly.graph_objects as go
+#from mpl_finance import candlestick_ohlc
+import matplotlib.pyplot as plt
+
+#linear regression calculation
+from sklearn.linear_model import LinearRegression
+from scipy.stats import linregress
+
+#sending html attachment
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
@@ -231,6 +240,10 @@ i = v_lambda_matrix.index[-1]
 x3_last_position = i
 
 
+
+#TODO
+#this loop should be developed. It never leaving second while loop
+
 while i>=0:
     i = x3_last_position
     if i < 0:
@@ -371,8 +384,6 @@ elif low1 < low2 or low1 == low2: #if the function is increasing
         low_linear_model_price = low1
 
 
-
-
 print('high_linear_model_price - ' + str(high_linear_model_price) + '\n')
 print('low_linear_model_price - ' + str(low_linear_model_price) + '\n')
 
@@ -380,35 +391,311 @@ print('low_linear_model_price - ' + str(low_linear_model_price) + '\n')
 
 
 
-INDICATORS
-#------------------------------------#
+#new model of LINEAR REGRESSION calculation
+#-----------------------------------------------------------#
+#the idea is to create linear regression predicted price for each row. This line should be adjusted to the largest/smallest 
+#tops on the chart to show the trend on the chart, give the user information that last close price is close to this trend and predict future price.
+#Anyhow it should give the user crucial information to help him in making investing decisions.
 
-#all averages for closing prices
+
+#calculations for SUPPORT/RESISTANCE
+table = table.reset_index()
+
+#giving a list for periods of times
+list_of_ranges = [5,10,15,25,50,75,100]
+
+for range in list_of_ranges:
+
+    #calculation for Support points
+    support_table = table[['Support']].copy().dropna(subset=['Support']).reset_index()
+    support_table = support_table.tail(range)
+
+    #adjusting linear function to 2 points
+    while len(support_table)>2:
+        slope, intercept, r_value, p_value, std_err = linregress(x=support_table['index'], y=support_table['Support'])
+        support_table = support_table.loc[support_table['Support'] < slope * support_table['index'] + intercept]
+    print('Support dla ' + str(range) + ' okresów:\n')
+    print(support_table)
+    print('---------------------')
+    
+    #giving ranges for the result table to exclude wrong data
+    if not len(support_table) < 2:
+        #reading position of the last, oldest index from where I can draw the funkction 
+        indeks = support_table.iloc[0][0].astype(np.int64)
+        slope, intercept, r_value, p_value, std_err = linregress(x=support_table['index'], y=support_table['Support'])
+        #I calculate the prices on each line based on the calculated function
+        table.iloc[indeks:, table.columns.get_loc('lin_sup_'+str(range))] = slope * table.iloc[indeks:, table.columns.get_loc('index')] + intercept
+        #I give the slope of the function for later commentary on whether the trend is downward/upward
+        table.iloc[indeks:, table.columns.get_loc('slope_lin_sup_'+str(range))] = format(slope, '.10f')
+
+    #calculations for Resistance points
+    resistance_table = table[['Resistance']].copy().dropna(subset=['Resistance']).reset_index()
+    resistance_table = resistance_table.tail(range).copy()
+
+    #adjusting 2 largest values
+    while len(resistance_table)>2:
+        slope, intercept, r_value, p_value, std_err = linregress(x=resistance_table['index'], y=resistance_table['Resistance'])
+        resistance_table = resistance_table.loc[resistance_table['Resistance'] > slope * resistance_table['index'] + intercept]
+    print('Resistance dla ' + str(range) + ' okresów:\n')
+    print(resistance_table)
+    print('---------------------')
+    
+    #limitation to the resulting table because sometimes it gives one row that causes errors and will overwrite the slope with an incorrect value
+    if not len(resistance_table) < 2:
+        #taking the index of the oldest position from which I will draw the function
+        indeks = resistance_table.iloc[0][0].astype(np.int64)
+        #I determine the function and complete the master table on the basis of the obtained slope and intercept values   
+        slope, intercept, r_value, p_value, std_err = linregress(x=resistance_table['index'], y=resistance_table['Resistance'])
+        #I calculate the prices on each line based on the calculated function
+        table.iloc[indeks:, table.columns.get_loc('lin_res_'+str(range))] = slope * table.iloc[indeks:, table.columns.get_loc('index')] + intercept
+        #I give the slope of the function for later commentary on whether the trend is downward/upward
+        table.iloc[indeks:, table.columns.get_loc('slope_lin_res_'+str(range))] = format(slope, '.10f')
+
+
+
+
+#calculations for LONG RANGE SUPPORT/RESISTANCE
+
+#giving a new list of periods I will look at from the end of the table. Range smaller because the points are rarer
+list_of_ranges = [2,10,20]
+
+for range in list_of_ranges:
+    #Support
+    support_table = table[['Long Range Support']].copy().dropna(subset=['Long Range Support']).reset_index()
+    support_table = support_table.tail(range)
+
+    #leaving the 2 smallest prices in the table to match the function
+    support_table = support_table.loc[support_table['Long Range Support'].nsmallest(2).index]
+
+    #I take the index of the oldest position from which I will draw the function
+    indeks = support_table.iloc[0][0].astype(np.int64)
+    
+    slope, intercept, r_value, p_value, std_err = linregress(x=support_table['index'], y=support_table['Long Range Support'])
+    table.iloc[indeks:, table.columns.get_loc('lr_sup_'+str(range))] = slope * table.iloc[indeks:, table.columns.get_loc('index')] + intercept
+    table.iloc[indeks:, table.columns.get_loc('slope_lr_sup_'+str(range))] = format(slope, '.10f')
+
+    #Resistance
+    resistance_table = table[['Long Range Resistance']].copy().dropna(subset=['Long Range Resistance']).reset_index()
+    resistance_table = resistance_table.tail(range)
+
+    #leaving the 2 largest prices in the table to match the function
+    resistance_table = resistance_table.loc[resistance_table['Long Range Resistance'].nlargest(2).index]
+    
+    #I take the index of the oldest position from which I will draw the function
+    indeks = resistance_table.iloc[0][0].astype(np.int64)
+
+    #I determine the function and complete the master table on the basis of the obtained slope and intercept values  
+    slope, intercept, r_value, p_value, std_err = linregress(x=resistance_table['index'], y=resistance_table['Long Range Resistance'])
+    table.iloc[indeks:, table.columns.get_loc('lr_res_'+str(range))] = slope * table.iloc[indeks:, table.columns.get_loc('index')] + intercept
+    table.iloc[indeks:, table.columns.get_loc('slope_lr_res_'+str(range))] = format(slope, '.10f')
+
+
+
+
+
+
+#calculations for LONG RANGE SUPPORT/RESISTANCE with a fixed first hole/top
+#the principle here is to see if the price is approaching a trend line, or if the price has recently pierced such a trend line!!!
+
+#I give a new list of periods with which I will look from the end of the table to the past. The first position 2 for the last two positions
+list_of_ranges = [2,5,10,15,20]
+
+for range in list_of_ranges:
+    
+    #SUPPORT
+    support_table = table[['Long Range Support']].copy().dropna(subset=['Long Range Support']).reset_index()
+    support_table = support_table.tail(range)
+    
+    #RESISTANCE
+    resistance_table = table[['Long Range Resistance']].copy().dropna(subset=['Long Range Resistance']).reset_index()
+    resistance_table = resistance_table.tail(range)
+    
+    #first scenario if the range includes only 2 values
+    if range == 2:
+        
+        #SUPPORT
+        indeks = support_table.iloc[0][0].astype(np.int64)
+        #I determine the function and complete the master table on the basis of the obtained slope and intercept values  
+        slope, intercept, r_value, p_value, std_err = linregress(x=support_table['index'], y=support_table['Long Range Support'])
+        table.iloc[indeks:, table.columns.get_loc('const_lr_sup_'+str(range))] = slope * table.iloc[indeks:, table.columns.get_loc('index')] + intercept
+        table.iloc[indeks:, table.columns.get_loc('slope_const_lr_sup_'+str(range))] = format(slope, '.10f')
+
+        #RESISTANCE
+        indeks = resistance_table.iloc[0][0].astype(np.int64)
+        #I determine the function and complete the master table on the basis of the obtained slope and intercept values    
+        slope, intercept, r_value, p_value, std_err = linregress(x=resistance_table['index'], y=resistance_table['Long Range Resistance'])
+        table.iloc[indeks:, table.columns.get_loc('const_lr_res_'+str(range))] = slope * table.iloc[indeks:, table.columns.get_loc('index')] + intercept
+        table.iloc[indeks:, table.columns.get_loc('slope_const_lr_res_'+str(range))] = format(slope, '.10f')
+
+    #if the table has more than 2 values
+    else:
+
+        #SUPPORT
+        #selecting the last row and then create a table without the last row
+        last_row = support_table.tail(1)
+        support_table = support_table.iloc[:-1]
+        #I leave the line with the smallest value
+        support_table = support_table.loc[support_table['Long Range Support'].nsmallest(1).index]
+        #merge the received row with the last row downloaded earlier to last_row
+        support_table = pd.concat([support_table,last_row])
+        print('\nponiżej połączone Long Range Support z wartością stałą w okresie - '+ str(range))
+        print(support_table)
+        #taking the index from which I will feed the data for the linear function to the last line
+        indeks = support_table.iloc[0][0].astype(np.int64)
+        #calculate the parameters of a linear function
+        slope, intercept, r_value, p_value, std_err = linregress(x=support_table['index'], y=support_table['Long Range Support'])
+        table.iloc[indeks:, table.columns.get_loc('const_lr_sup_'+str(range))] = slope * table.iloc[indeks:, table.columns.get_loc('index')] + intercept
+        table.iloc[indeks:, table.columns.get_loc('slope_const_lr_sup_'+str(range))] = format(slope, '.10f')
+
+        #RESISTANCE
+        #selecting the last row and then create a table without the last row
+        last_row = resistance_table.tail(1)
+        resistance_table = resistance_table.iloc[:-1]
+        #leaving the line with the smallest value
+        resistance_table = resistance_table.loc[resistance_table['Long Range Resistance'].nlargest(1).index]
+        #merge the received row with the last row downloaded earlier to last_row
+        resistance_table = pd.concat([resistance_table,last_row])
+        print('\nponiżej połączone Long Range Resistance z wartością stałą w okresie - '+ str(range))
+        print(resistance_table)
+        #taking the index from which I will feed the data for the linear function to the last line
+        indeks = resistance_table.iloc[0][0].astype(np.int64)
+        #calculate the parameters of a linear function
+        slope, intercept, r_value, p_value, std_err = linregress(x=resistance_table['index'], y=resistance_table['Long Range Resistance'])
+        table.iloc[indeks:, table.columns.get_loc('const_lr_res_'+str(range))] = slope * table.iloc[indeks:, table.columns.get_loc('index')] + intercept
+        table.iloc[indeks:, table.columns.get_loc('slope_const_lr_res_'+str(range))] = format(slope, '.10f')
+
+
+
+#I remove the index column added earlier
+table = table.drop('index', axis=1)
+
+
+
+
+
+#CHARTS
+#---------------------------------------#
+#building the chart for each period of time from the given list (list_of_ranges) based on last calculations for linear regression model
+
+
+#list time ranges ((minutes)) for each chart
+list_of_ranges = [25,50,100,150,200,400,1000]
+
+for i in list_of_ranges:
+
+    #creating temporary table with last rows (fresh data). Period is given from the list as "i"
+    temp_table = table.tail(i).copy()
+    
+    #creating the chart
+    figure = go.Figure()
+    
+    #adding columns for candlestick chart (x - date time index)
+    figure.add_trace(go.Candlestick(x=temp_table.index,low=temp_table['Low'],high=temp_table['High'],close=temp_table['Close'],open=temp_table['Open'],increasing_line_color='orange',decreasing_line_color='black'))
+
+    #depending on the given range of minutes, I combine certain indicators on one chart
+    if i == 25 or i == 50:
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_res_5'],mode='lines', line=dict(color='blue', width=1),name='Linear Regresion (5 resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_sup_5'],mode='lines', line=dict(color='red', width=1),name='Linear Regresion (5 supports)',showlegend=True))
+    elif i == 100:
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_res_5'],mode='lines', line=dict(color='blue', width=1),name='Linear Regresion (5 resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_sup_5'],mode='lines', line=dict(color='red', width=1),name='Linear Regresion (5 supports)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_res_10'],mode='lines', line=dict(color='blue', width=2),name='Linear Regresion (10 resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_sup_10'],mode='lines', line=dict(color='red', width=2),name='Linear Regresion (10 supports)',showlegend=True))
+    elif i == 150 or i == 200:
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_res_10'],mode='lines', line=dict(color='blue', width=1),name='Linear Regresion (10 resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_sup_10'],mode='lines', line=dict(color='red', width=1),name='Linear Regresion (10 supports)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_res_15'],mode='lines', line=dict(color='blue', width=2),name='Linear Regresion (15 resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_sup_15'],mode='lines', line=dict(color='red', width=2),name='Linear Regresion (15 supports)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_res_2'],mode='lines', line=dict(color='royalblue', width=3),name='Linear Regresion (2 const lr resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_sup_2'],mode='lines', line=dict(color='firebrick', width=3),name='Linear Regresion (2 const lr supports)',showlegend=True))
+    elif i == 400:
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_res_25'],mode='lines', line=dict(color='blue', width=1),name='Linear Regresion (25 resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_sup_25'],mode='lines', line=dict(color='red', width=1),name='Linear Regresion (25 supports)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_res_50'],mode='lines', line=dict(color='blue', width=2),name='Linear Regresion (50 resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_sup_50'],mode='lines', line=dict(color='red', width=2),name='Linear Regresion (50 supports)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_res_2'],mode='lines', line=dict(color='green', width=3),name='Linear Regresion (2 const lr resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_sup_2'],mode='lines', line=dict(color='firebrick', width=3),name='Linear Regresion (2 const lr supports)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_res_5'],mode='lines', line=dict(color='green', width=3),name='Linear Regresion (5 const lr resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_sup_5'],mode='lines', line=dict(color='firebrick', width=3),name='Linear Regresion (5 const lr supports)',showlegend=True))
+    elif i == 1000:
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_res_75'],mode='lines', line=dict(color='blue', width=1),name='Linear Regresion (75 resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_sup_75'],mode='lines', line=dict(color='red', width=1),name='Linear Regresion (75 supports)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_res_100'],mode='lines', line=dict(color='blue', width=2),name='Linear Regresion (100 resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_sup_100'],mode='lines', line=dict(color='red', width=2),name='Linear Regresion (100 supports)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_res_10'],mode='lines', line=dict(color='green', width=3),name='Linear Regresion (10 const lr resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_sup_10'],mode='lines', line=dict(color='firebrick', width=3),name='Linear Regresion (10 const lr supports)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_res_15'],mode='lines', line=dict(color='green', width=3),name='Linear Regresion (15 const lr resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_sup_15'],mode='lines', line=dict(color='firebrick', width=3),name='Linear Regresion (15 const lr supports)',showlegend=True))
+
+    #add Support and Resistance points on the chart
+    figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['Support'],mode='markers',showlegend=True))
+    figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['Resistance'],mode='markers',showlegend=True))
+    #specify axis titles and exclude from showing an additional chart under the graph
+    figure.update_layout(title='EUR/USD price (last ' + str(i) + ' minutes)',yaxis_title='Price',xaxis_title='Date',xaxis_rangeslider_visible=False)
+    figure.show()
+    
+    
+    
+#TODO
+#create html/pdf file with created charts and send/save it
+
+
+
+
+
+INDICATORS
+#=======================================#
+
+#all averages based on closing prices
 #arithmetic mean
 mean = table.loc[:,"Open"].mean()
 #weighted average
 average = np.average(table['Open'])
 
 #simple moving average SMA
+#----------------------------------------#
 table['SMA9'] = table['Close'].rolling(window=9).mean() #9-period
 
 #weighted moving average WMA
+#----------------------------------------#
 weights = np.array([0.1, 0.2, 0.3, 0.4]) #weights for subsequent periods
 table['WMA'] = table['Close'].rolling(4).apply(lambda x: np.sum(weights*x))
 
 #exponential moving average EMA
+#----------------------------------------#
 table['EMA9'] = table['Close'].ewm(span=9).mean()
 table['EMA12'] = table['Close'].ewm(span=12).mean()
 table['EMA26'] = table['Close'].ewm(span=26).mean()
 
-#MACD
-# Calculate MACD values using the pandas_ta library
-table.ta.macd(close='Close', fast=12, slow=26, signal=9, append=True)
 
+#MACD
+#----------------------------------------#
+# Calculate MACD values using the pandas_ta library and saving them on the table
+table.ta.macd(close='Close', fast=12, slow=26, signal=9, append=True)
 table['MACD'] = table['EMA12'] - table['EMA26']
 table['MACD'] = table['MACD'].round(6) #I round up to 6 decimal places
 
+#preparing data for the chart
+#short EMA calculation
+shortEMA = table.Close.ewm(span=12, adjust=False).mean()
+#long EMA calculation
+longEMA = table.Close.ewm(span=26, adjust=False).mean()
+#calculating MACD line
+MACD = shortEMA - longEMA
+#calculating signal line
+signal = MACD.ewm(span=9, adjust=False).mean()
+
+#creating the chart
+plt.figure(figsize=(12.2, 4.5))
+plt.plot(table.index, MACD, label='MACD', color='red', alpha=0.35) #alpha=0.35 oznacza przymglenie linii
+plt.plot(table.index, signal, label='Signal line', color='blue', alpha=0.35) #alpha=0.35 oznacza przymglenie linii
+plt.xticks(rotation=45)
+plt.legend(loc='upper left')
+plt.show()
+
+
 #RSI
+#----------------------------------------#
 #(RSI = 100-(100/(1+RS)), where RS=a/b - ab are moving average from n periods of time)
 table_rsi = table[['Close', 'Candle']].copy() #I create a new table under calculations
 table_rsi.loc[table_rsi['Candle'] == 'falling', 'loss'] = table_rsi['Close'] #I'm only completing closures on dips
@@ -426,9 +713,11 @@ table['RSI'] = 100 - (100 / (1 + table_rsi['rs'])) #calculate the RSI and paste 
 
 
 
+#CLOSING THE PROGRAM
+#=======================================#
+
 #saving result to the file
 table.to_excel("analiza_giełdowa.xlsx", sheet_name="Sheet1")
-
 
 check_list.close()
 
@@ -437,6 +726,9 @@ open_csv.write('DONE')
 open_csv.close()
 
 
+
+
+#=================================================================#
 #TODO
 #check the price channel by counting two linear functions and comparing the two slope coefficients.
 #if there is a rising line then after the first apex the lowest rows are measured and the slope is compared. 
