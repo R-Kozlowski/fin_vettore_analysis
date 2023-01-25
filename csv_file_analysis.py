@@ -51,7 +51,27 @@ table = pd.read_csv(plik, sep=',', decimal='.')
 
 
 #building main dataframe
-table = pd.DataFrame(table, columns=['Gmt time','Weekday','Day','Time','Open','High','Low','Close','Volume','Candle','RSI','MACD','Resistance Top','Support Top', 'Signal','Price Action','Remarks'])
+table = pd.DataFrame(table, columns=['Gmt time','Weekday','Day','Time',
+                                    'Open','High','Low','Close','Volume',
+                                    'Resistance','Support','Long Range Resistance','Long Range Support',
+                                    'Candle','RSI','MACD','Signal line (MACD)','Buy_Signal_Price','Sell_Signal_Price',
+                                    'lin_sup_5','slope_lin_sup_5','lin_sup_10','slope_lin_sup_10','lin_sup_15','slope_lin_sup_15',
+                                     'lin_sup_25','slope_lin_sup_25','lin_sup_50','slope_lin_sup_50','lin_sup_75','slope_lin_sup_75',
+                                     'lin_sup_100','slope_lin_sup_100',
+                                    'lin_res_5','slope_lin_res_5','lin_res_10','slope_lin_res_10','lin_res_15','slope_lin_res_15',
+                                     'lin_res_25','slope_lin_res_25','lin_res_50','slope_lin_res_50','lin_res_75','slope_lin_res_75',
+                                     'lin_res_100','slope_lin_res_100',
+                                     'adj_lr_sup_2','slope_adj_lr_sup_2','adj_lr_sup_5','slope_adj_lr_sup_5','adj_lr_sup_10','slope_adj_lr_sup_10',
+                                     'adj_lr_sup_15','slope_adj_lr_sup_15','adj_lr_sup_20','slope_adj_lr_sup_20',
+                                     'adj_lr_res_2','slope_adj_lr_res_2','adj_lr_res_5','slope_adj_lr_res_5','adj_lr_res_10','slope_adj_lr_res_10',
+                                     'adj_lr_res_15','slope_adj_lr_res_15','adj_lr_res_20','slope_adj_lr_res_20',                                     
+                                     'lr_sup_2','slope_lr_sup_2','lr_sup_5','slope_lr_sup_5','lr_sup_10','slope_lr_sup_10','lr_sup_15','slope_lr_sup_15','lr_sup_20','slope_lr_sup_20',
+                                     'lr_res_2','slope_lr_res_2','lr_res_5','slope_lr_res_5','lr_res_10','slope_lr_res_10','lr_res_15','slope_lr_res_15','lr_res_20','slope_lr_res_20',
+                                     'const_lr_sup_2','slope_const_lr_sup_2','const_lr_sup_5','slope_const_lr_sup_5','const_lr_sup_10',
+                                     'slope_const_lr_sup_10','const_lr_sup_15','slope_const_lr_sup_15','const_lr_sup_20','slope_const_lr_sup_20',
+                                     'const_lr_res_2','slope_const_lr_res_2','const_lr_res_5','slope_const_lr_res_5','const_lr_res_10',
+                                     'slope_const_lr_res_10','const_lr_res_15','slope_const_lr_res_15','const_lr_res_20','slope_const_lr_res_20',
+                                    'Signal','Price Action','Remarks'])
 table["Weekday"] = pd.to_numeric(table["Weekday"], errors='coerce').fillna(0)
 table["Day"] = pd.to_numeric(table["Day"], errors='coerce').fillna(0)
 table["Time"] = pd.to_numeric(table["Time"], errors='coerce').fillna(0)
@@ -109,7 +129,27 @@ time_frame_list = [5,15,60] #list of periods
 
 
 for time_shape in time_frame_list:
-    table_min = pd.DataFrame(columns=['Gmt time','Weekday','Day','Time','Open','High','Low','Close','Volume','Candle','RSI','MACD','Resistance Top','Support Top','Signal','Price Action','Remarks'])
+    table_min = pd.DataFrame(columns=['Gmt time','Weekday','Day','Time',
+                                    'Open','High','Low','Close','Volume',
+                                    'Resistance','Support','Long Range Resistance','Long Range Support',
+                                    'Candle','RSI','MACD','Signal line (MACD)','Buy_Signal_Price','Sell_Signal_Price',
+                                    'lin_sup_5','slope_lin_sup_5','lin_sup_10','slope_lin_sup_10','lin_sup_15','slope_lin_sup_15',
+                                     'lin_sup_25','slope_lin_sup_25','lin_sup_50','slope_lin_sup_50','lin_sup_75','slope_lin_sup_75',
+                                     'lin_sup_100','slope_lin_sup_100',
+                                    'lin_res_5','slope_lin_res_5','lin_res_10','slope_lin_res_10','lin_res_15','slope_lin_res_15',
+                                     'lin_res_25','slope_lin_res_25','lin_res_50','slope_lin_res_50','lin_res_75','slope_lin_res_75',
+                                     'lin_res_100','slope_lin_res_100',
+                                     'adj_lr_sup_2','slope_adj_lr_sup_2','adj_lr_sup_5','slope_adj_lr_sup_5','adj_lr_sup_10','slope_adj_lr_sup_10',
+                                     'adj_lr_sup_15','slope_adj_lr_sup_15','adj_lr_sup_20','slope_adj_lr_sup_20',
+                                     'adj_lr_res_2','slope_adj_lr_res_2','adj_lr_res_5','slope_adj_lr_res_5','adj_lr_res_10','slope_adj_lr_res_10',
+                                     'adj_lr_res_15','slope_adj_lr_res_15','adj_lr_res_20','slope_adj_lr_res_20',                                     
+                                     'lr_sup_2','slope_lr_sup_2','lr_sup_5','slope_lr_sup_5','lr_sup_10','slope_lr_sup_10','lr_sup_15','slope_lr_sup_15','lr_sup_20','slope_lr_sup_20',
+                                     'lr_res_2','slope_lr_res_2','lr_res_5','slope_lr_res_5','lr_res_10','slope_lr_res_10','lr_res_15','slope_lr_res_15','lr_res_20','slope_lr_res_20',
+                                     'const_lr_sup_2','slope_const_lr_sup_2','const_lr_sup_5','slope_const_lr_sup_5','const_lr_sup_10',
+                                     'slope_const_lr_sup_10','const_lr_sup_15','slope_const_lr_sup_15','const_lr_sup_20','slope_const_lr_sup_20',
+                                     'const_lr_res_2','slope_const_lr_res_2','const_lr_res_5','slope_const_lr_res_5','const_lr_res_10',
+                                     'slope_const_lr_res_10','const_lr_res_15','slope_const_lr_res_15','const_lr_res_20','slope_const_lr_res_20',
+                                    'Signal','Price Action','Remarks'])
     position = 0
     for row in table.index:
         try:
@@ -136,8 +176,28 @@ check_list.write('create 5, 15, 60 min periods files - ok.\n')
 #create a separate analysis for daily excel
 days = table['Day'].loc[~table.duplicated(['Day'])] #I create a dataframe with individual days
 days.reset_index() #resetuję nr wierszy
-table_day = pd.DataFrame(columns=['Gmt time','Weekday','Day','Time','Open','High','Low','Close','Volume','Candle','RSI','MACD','Resistance Top','Support Top','Signal','Price Action','Remarks'])
-                        
+table_day = pd.DataFrame(columns=['Gmt time','Weekday','Day','Time',
+                                    'Open','High','Low','Close','Volume',
+                                    'Resistance','Support','Long Range Resistance','Long Range Support',
+                                    'Candle','RSI','MACD','Signal line (MACD)','Buy_Signal_Price','Sell_Signal_Price',
+                                    'lin_sup_5','slope_lin_sup_5','lin_sup_10','slope_lin_sup_10','lin_sup_15','slope_lin_sup_15',
+                                     'lin_sup_25','slope_lin_sup_25','lin_sup_50','slope_lin_sup_50','lin_sup_75','slope_lin_sup_75',
+                                     'lin_sup_100','slope_lin_sup_100',
+                                    'lin_res_5','slope_lin_res_5','lin_res_10','slope_lin_res_10','lin_res_15','slope_lin_res_15',
+                                     'lin_res_25','slope_lin_res_25','lin_res_50','slope_lin_res_50','lin_res_75','slope_lin_res_75',
+                                     'lin_res_100','slope_lin_res_100',
+                                     'adj_lr_sup_2','slope_adj_lr_sup_2','adj_lr_sup_5','slope_adj_lr_sup_5','adj_lr_sup_10','slope_adj_lr_sup_10',
+                                     'adj_lr_sup_15','slope_adj_lr_sup_15','adj_lr_sup_20','slope_adj_lr_sup_20',
+                                     'adj_lr_res_2','slope_adj_lr_res_2','adj_lr_res_5','slope_adj_lr_res_5','adj_lr_res_10','slope_adj_lr_res_10',
+                                     'adj_lr_res_15','slope_adj_lr_res_15','adj_lr_res_20','slope_adj_lr_res_20',                                     
+                                     'lr_sup_2','slope_lr_sup_2','lr_sup_5','slope_lr_sup_5','lr_sup_10','slope_lr_sup_10','lr_sup_15','slope_lr_sup_15','lr_sup_20','slope_lr_sup_20',
+                                     'lr_res_2','slope_lr_res_2','lr_res_5','slope_lr_res_5','lr_res_10','slope_lr_res_10','lr_res_15','slope_lr_res_15','lr_res_20','slope_lr_res_20',
+                                     'const_lr_sup_2','slope_const_lr_sup_2','const_lr_sup_5','slope_const_lr_sup_5','const_lr_sup_10',
+                                     'slope_const_lr_sup_10','const_lr_sup_15','slope_const_lr_sup_15','const_lr_sup_20','slope_const_lr_sup_20',
+                                     'const_lr_res_2','slope_const_lr_res_2','const_lr_res_5','slope_const_lr_res_5','const_lr_res_10',
+                                     'slope_const_lr_res_10','const_lr_res_15','slope_const_lr_res_15','const_lr_res_20','slope_const_lr_res_20',
+                                    'Signal','Price Action','Remarks'])
+
 for day in days.index:
     temporary_df = table.copy().loc[table['Day'] == days[day]]
     temporary_df.at[temporary_df.index[-1], 'Open'] = temporary_df['Open'].head(1) #opening price from the first line
@@ -565,12 +625,118 @@ for range in list_of_ranges:
         table.iloc[indeks:, table.columns.get_loc('slope_const_lr_res_'+str(range))] = format(slope, '.10f')
 
 
-
-#I remove the index column added earlier
+#deleting index column
 table = table.drop('index', axis=1)
 
 
 
+#filtering wrong linear regression lines
+#-------------------------------------#
+#The lines based on the first vertex have the bug that they intersect other holes/vertices.
+#They must be removed, so I check if whichever value intersects the graph and replace entire column with NaN value
+
+
+#list of columns to check (SUPPORT)
+list_of_columns = ['const_lr_sup_2','const_lr_sup_5','const_lr_sup_10','const_lr_sup_15','const_lr_sup_20']
+
+#loop for every column
+for column in list_of_columns:
+    #mazzle
+    muzzle = len(table[table[column] > table.Low])
+    #if it has found at least one intersection it converts that column and slope to NaN
+    if muzzle > 1:
+        table[column] = np.nan
+        table['slope_' + str(column)] = np.nan
+
+
+#list of columns to check (RESISTANCE)
+list_of_columns = ['const_lr_res_2','const_lr_res_5','const_lr_res_10','const_lr_res_15','const_lr_res_20']
+
+#loop for every column
+for column in list_of_columns:
+    #mazzle
+    muzzle = len(table[table[column] < table.High])
+    #if it has found at least one intersection it converts that column and slope to NaN
+    if muzzle > 1:
+        table[column] = np.nan
+        table['slope_' + str(column)] = np.nan
+
+
+
+
+
+#deleting wrong linear regression lines based on last values
+#------------------------------------------------------------------#
+
+#giving list of ranges to check
+list_of_ranges = [10,15,30,45,60,120,240,480]
+
+for frame in list_of_ranges:
+    if frame <= 30:
+        temp_table = table.tail(5)
+        list_of_columns = ['lin_sup_5','lin_sup_10','lin_sup_15']
+        for column in list_of_columns:
+            muzzle = len(temp_table[temp_table[column] > temp_table.Low])
+            if muzzle == 5:
+                table[column] = np.nan
+                table['slope_' + str(column)] = np.nan                
+        list_of_columns = ['lin_res_5','lin_res_10','lin_res_15']
+        for column in list_of_columns:
+            muzzle = len(temp_table[temp_table[column] < temp_table.High])
+            if muzzle == 5:
+                table[column] = np.nan
+                table['slope_' + str(column)] = np.nan              
+    else:
+        temp_table = table.tail(10)
+        list_of_columns = ['lin_sup_25','lin_sup_50','lin_sup_75','lin_sup_100',
+                           'lr_sup_2','lr_sup_5','lr_sup_10','lr_sup_15','lr_sup_20',
+                           'adj_lr_sup_2','adj_lr_sup_5','adj_lr_sup_10','adj_lr_sup_15','adj_lr_sup_20']
+        for column in list_of_columns:
+            muzzle = len(temp_table[temp_table[column] > temp_table.Low])
+            if muzzle == 10:
+                table[column] = np.nan
+                table['slope_' + str(column)] = np.nan                
+        list_of_columns = ['lin_res_25','lin_res_50','lin_res_75','lin_res_100',
+                           'lr_res_2','lr_res_5','lr_res_10','lr_res_15','lr_res_20',
+                           'adj_lr_res_2','adj_lr_res_5','adj_lr_res_10','adj_lr_res_15','adj_lr_res_20']
+        for column in list_of_columns:
+            muzzle = len(temp_table[temp_table[column] < temp_table.High])
+            if muzzle == 10:
+                table[column] = np.nan
+                table['slope_' + str(column)] = np.nan          
+
+
+
+#The next condition examines all the rest of the function to see if it has crossed the graph. It only checks all above the last 15 minutes
+
+
+#I give the end of the table first, and then without the last 5 rows
+temp_table = table.tail(500)
+temp_table = temp_table.head(500-5)
+
+#Support
+list_of_columns = ['lin_sup_5','lin_sup_10','lin_sup_15','lin_sup_25','lin_sup_50','lin_sup_75','lin_sup_100',
+                   'lr_sup_2','lr_sup_5','lr_sup_10','lr_sup_15','lr_sup_20',
+                   'adj_lr_sup_2','adj_lr_sup_5','adj_lr_sup_10','adj_lr_sup_15','adj_lr_sup_20']
+for column in list_of_columns:
+    muzzle = len(temp_table[temp_table[column] > temp_table.Low])
+    if muzzle > 5:
+        table[column] = np.nan
+        table['slope_' + str(column)] = np.nan
+
+#Resistance
+list_of_columns = ['lin_res_5','lin_res_10','lin_res_15','lin_res_25','lin_res_50','lin_res_75','lin_res_100',
+                   'lr_res_2','lr_res_5','lr_res_10','lr_res_15','lr_res_20',
+                   'adj_lr_res_2','adj_lr_res_5','adj_lr_res_10','adj_lr_res_15','adj_lr_res_20']
+for column in list_of_columns:
+    muzzle = len(temp_table[temp_table[column] < temp_table.High])
+    if muzzle > 5:
+        table[column] = np.nan
+        table['slope_' + str(column)] = np.nan
+
+
+
+        
 
 
 #CHARTS
@@ -601,32 +767,77 @@ for i in list_of_ranges:
         figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_sup_5'],mode='lines', line=dict(color='red', width=1),name='Linear Regresion (5 supports)',showlegend=True))
         figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_res_10'],mode='lines', line=dict(color='blue', width=2),name='Linear Regresion (10 resistances)',showlegend=True))
         figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_sup_10'],mode='lines', line=dict(color='red', width=2),name='Linear Regresion (10 supports)',showlegend=True))
-    elif i == 150 or i == 200:
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['adj_lr_res_2'],mode='lines', line=dict(color='royalblue', width=3),name='Linear Regresion (2 adj lr resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['adj_lr_sup_2'],mode='lines', line=dict(color='firebrick', width=3),name='Linear Regresion (2 adj lr supports)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lr_res_2'],mode='lines', line=dict(color='royalblue', width=3),name='Linear Regresion (2 lr resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lr_sup_2'],mode='lines', line=dict(color='firebrick', width=3),name='Linear Regresion (2 lr supports)',showlegend=True))        
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_res_2'],mode='lines', line=dict(color='royalblue', width=3),name='Linear Regresion (2 const lr resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_sup_2'],mode='lines', line=dict(color='firebrick', width=3),name='Linear Regresion (2 const lr supports)',showlegend=True))
+        try:
+            figure.add_hrect(y0=temp_table['Long Range Resistance'].max()-0.00004, y1=temp_table['Long Range Resistance'].max()+0.00004, line_width=0, fillcolor="orange", opacity=0.2)
+            figure.add_hrect(y0=temp_table['Long Range Support'].min()-0.00004, y1=temp_table['Long Range Support'].min()+0.00004, line_width=0, fillcolor="orange", opacity=0.2)
+        except:
+            continue
+    elif i == 150:
         figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_res_10'],mode='lines', line=dict(color='blue', width=1),name='Linear Regresion (10 resistances)',showlegend=True))
         figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_sup_10'],mode='lines', line=dict(color='red', width=1),name='Linear Regresion (10 supports)',showlegend=True))
         figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_res_15'],mode='lines', line=dict(color='blue', width=2),name='Linear Regresion (15 resistances)',showlegend=True))
         figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_sup_15'],mode='lines', line=dict(color='red', width=2),name='Linear Regresion (15 supports)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['adj_lr_res_2'],mode='lines', line=dict(color='royalblue', width=3),name='Linear Regresion (2 adj lr resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['adj_lr_sup_2'],mode='lines', line=dict(color='firebrick', width=3),name='Linear Regresion (2 adj lr supports)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lr_res_2'],mode='lines', line=dict(color='royalblue', width=3),name='Linear Regresion (2 lr resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lr_sup_2'],mode='lines', line=dict(color='firebrick', width=3),name='Linear Regresion (2 lr supports)',showlegend=True))        
         figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_res_2'],mode='lines', line=dict(color='royalblue', width=3),name='Linear Regresion (2 const lr resistances)',showlegend=True))
         figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_sup_2'],mode='lines', line=dict(color='firebrick', width=3),name='Linear Regresion (2 const lr supports)',showlegend=True))
-    elif i == 400:
+        try:
+            figure.add_hrect(y0=temp_table['Long Range Resistance'].max()-0.00004, y1=temp_table['Long Range Resistance'].max()+0.00004, line_width=0, fillcolor="orange", opacity=0.2)
+            figure.add_hrect(y0=temp_table['Long Range Support'].min()-0.00004, y1=temp_table['Long Range Support'].min()+0.00004, line_width=0, fillcolor="orange", opacity=0.2)
+        except:
+            continue
+    elif i == 200 or i == 400:
         figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_res_25'],mode='lines', line=dict(color='blue', width=1),name='Linear Regresion (25 resistances)',showlegend=True))
         figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_sup_25'],mode='lines', line=dict(color='red', width=1),name='Linear Regresion (25 supports)',showlegend=True))
-        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_res_50'],mode='lines', line=dict(color='blue', width=2),name='Linear Regresion (50 resistances)',showlegend=True))
-        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_sup_50'],mode='lines', line=dict(color='red', width=2),name='Linear Regresion (50 supports)',showlegend=True))
-        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_res_2'],mode='lines', line=dict(color='green', width=3),name='Linear Regresion (2 const lr resistances)',showlegend=True))
-        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_sup_2'],mode='lines', line=dict(color='firebrick', width=3),name='Linear Regresion (2 const lr supports)',showlegend=True))
-        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_res_5'],mode='lines', line=dict(color='green', width=3),name='Linear Regresion (5 const lr resistances)',showlegend=True))
-        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_sup_5'],mode='lines', line=dict(color='firebrick', width=3),name='Linear Regresion (5 const lr supports)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_res_50'],mode='lines', line=dict(color='blue', width=1),name='Linear Regresion (50 resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_sup_50'],mode='lines', line=dict(color='red', width=1),name='Linear Regresion (50 supports)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['adj_lr_res_2'],mode='lines', line=dict(color='green', width=2),name='Linear Regresion (2 adj lr resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['adj_lr_sup_2'],mode='lines', line=dict(color='firebrick', width=2),name='Linear Regresion (2 adjlr supports)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['adj_lr_res_5'],mode='lines', line=dict(color='green', width=2),name='Linear Regresion (5 adj lr resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['adj_lr_sup_5'],mode='lines', line=dict(color='firebrick', width=2),name='Linear Regresion (5 adj lr supports)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lr_res_2'],mode='lines', line=dict(color='green', width=3),name='Linear Regresion (2 lr resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lr_sup_2'],mode='lines', line=dict(color='firebrick', width=3),name='Linear Regresion (2 lr supports)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lr_res_5'],mode='lines', line=dict(color='green', width=3),name='Linear Regresion (5 lr resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lr_sup_5'],mode='lines', line=dict(color='firebrick', width=3),name='Linear Regresion (5 lr supports)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_res_2'],mode='lines', line=dict(color='green', width=4),name='Linear Regresion (2 const lr resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_sup_2'],mode='lines', line=dict(color='firebrick', width=4),name='Linear Regresion (2 const lr supports)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_res_5'],mode='lines', line=dict(color='green', width=4),name='Linear Regresion (5 const lr resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_sup_5'],mode='lines', line=dict(color='firebrick', width=4),name='Linear Regresion (5 const lr supports)',showlegend=True))
+        try:
+            figure.add_hrect(y0=temp_table['Long Range Resistance'].max()-0.00004, y1=temp_table['Long Range Resistance'].max()+0.00004, line_width=0, fillcolor="orange", opacity=0.2)
+            figure.add_hrect(y0=temp_table['Long Range Support'].min()-0.00004, y1=temp_table['Long Range Support'].min()+0.00004, line_width=0, fillcolor="orange", opacity=0.2)
+        except:
+            continue
     elif i == 1000:
         figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_res_75'],mode='lines', line=dict(color='blue', width=1),name='Linear Regresion (75 resistances)',showlegend=True))
         figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_sup_75'],mode='lines', line=dict(color='red', width=1),name='Linear Regresion (75 supports)',showlegend=True))
-        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_res_100'],mode='lines', line=dict(color='blue', width=2),name='Linear Regresion (100 resistances)',showlegend=True))
-        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_sup_100'],mode='lines', line=dict(color='red', width=2),name='Linear Regresion (100 supports)',showlegend=True))
-        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_res_10'],mode='lines', line=dict(color='green', width=3),name='Linear Regresion (10 const lr resistances)',showlegend=True))
-        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_sup_10'],mode='lines', line=dict(color='firebrick', width=3),name='Linear Regresion (10 const lr supports)',showlegend=True))
-        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_res_15'],mode='lines', line=dict(color='green', width=3),name='Linear Regresion (15 const lr resistances)',showlegend=True))
-        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_sup_15'],mode='lines', line=dict(color='firebrick', width=3),name='Linear Regresion (15 const lr supports)',showlegend=True))
-
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_res_100'],mode='lines', line=dict(color='blue', width=1),name='Linear Regresion (100 resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lin_sup_100'],mode='lines', line=dict(color='red', width=1),name='Linear Regresion (100 supports)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['adj_lr_res_10'],mode='lines', line=dict(color='green', width=1),name='Linear Regresion (10 adj lr resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['adj_lr_sup_10'],mode='lines', line=dict(color='firebrick', width=2),name='Linear Regresion (10 adjlr supports)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['adj_lr_res_15'],mode='lines', line=dict(color='green', width=2),name='Linear Regresion (15 adj lr resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['adj_lr_sup_15'],mode='lines', line=dict(color='firebrick', width=2),name='Linear Regresion (15 adj lr supports)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lr_res_10'],mode='lines', line=dict(color='green', width=3),name='Linear Regresion (10 lr resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lr_sup_10'],mode='lines', line=dict(color='firebrick', width=3),name='Linear Regresion (10 lr supports)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lr_res_15'],mode='lines', line=dict(color='green', width=3),name='Linear Regresion (15 lr resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['lr_sup_15'],mode='lines', line=dict(color='firebrick', width=3),name='Linear Regresion (15 lr supports)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_res_10'],mode='lines', line=dict(color='green', width=4),name='Linear Regresion (10 const lr resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_sup_10'],mode='lines', line=dict(color='firebrick', width=4),name='Linear Regresion (10 const lr supports)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_res_15'],mode='lines', line=dict(color='green', width=4),name='Linear Regresion (15 const lr resistances)',showlegend=True))
+        figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['const_lr_sup_15'],mode='lines', line=dict(color='firebrick', width=4),name='Linear Regresion (15 const lr supports)',showlegend=True))
+        try:
+            figure.add_hrect(y0=temp_table['Long Range Resistance'].max()-0.00005, y1=temp_table['Long Range Resistance'].max()+0.00005, line_width=0, fillcolor="orange", opacity=0.3)
+            figure.add_hrect(y0=temp_table['Long Range Support'].min()-0.00005, y1=temp_table['Long Range Support'].min()+0.00005, line_width=0, fillcolor="orange", opacity=0.3)
+        except:
+            continue
     #add Support and Resistance points on the chart
     figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['Support'],mode='markers',showlegend=True))
     figure.add_trace(go.Scatter(x=temp_table.index,y=temp_table['Resistance'],mode='markers',showlegend=True))
@@ -636,8 +847,241 @@ for i in list_of_ranges:
     
     
     
-#TODO
-#create html/pdf file with created charts and send/save it
+    
+   
+#second method with matplotlib library
+#zastosowałem 2 różne sposoby. Pierwszy to tworzę oddzielnie wykres świecowy i MACD.
+#drugi sposób to łączę je w jeden plik jpg
+
+
+#resetuję index żeby nie wysypało wykresu
+table = table.reset_index()
+
+
+#1. sposób
+#podaję listę zakresów. Do 300 ponieważ powyżej nic nie widać
+list_of_ranges = [25,50,100,150,200,300]
+
+#wyznaczam listę z nazwami obrazów wykresów
+list_of_img = []
+
+
+for i in list_of_ranges:
+    #tworzę tymczasową tabelę dla wykresów
+    temp_table = table.tail(i).copy()
+
+    #określam rozmiar wykresu
+    plt.figure(figsize=(14.2, 5.5))
+
+    #w zależności od zakresów dokładam konkretne linie trendu
+    if i < 100:
+        #tworzę słownik dla każdej wartości (każda kolumna ma 2 wartości)
+        slownik = {('lin_sup_5'):(1,'red'), ('lin_res_5'):(1,'blue'),
+                   ('adj_lr_res_2'):(2,'red'), ('adj_lr_sup_2'):(2,'blue'),
+                   ('lr_res_2'):(2,'red'), ('lr_sup_2'):(2,'blue'),
+                   ('const_lr_res_2'):(2,'red'), ('const_lr_sup_2'):(2,'blue')}
+        #pętla po wszystkich elementach słownika
+        for column,(ii,jj) in slownik.items():
+            plt.scatter(temp_table.index, temp_table[column], s=ii, color=jj, linewidths=0)
+            plt.plot(temp_table[column], label=column)
+            
+    elif i == 100:
+        #tworzę słownik dla każdej wartości (każda kolumna ma 2 wartości)
+        slownik = {('lin_sup_10'):(1,'red'), ('lin_res_10'):(1,'blue'),
+                   ('lin_sup_15'):(2,'brown'), ('lin_res_15'):(2,'green'),
+                   ('adj_lr_res_2'):(3,'red'), ('adj_lr_sup_2'):(3,'blue'),
+                   ('lr_res_2'):(3,'red'), ('lr_sup_2'):(3,'blue'),
+                   ('const_lr_res_2'):(3,'red'), ('const_lr_sup_2'):(3,'blue')}
+        #pętla po wszystkich elementach słownika
+        for column,(ii,jj) in slownik.items():
+            plt.scatter(temp_table.index, temp_table[column], s=ii, color=jj, linewidths=0)
+            plt.plot(temp_table[column], label=column)
+            
+    elif i == 150 or i == 200:
+        #tworzę słownik dla każdej wartości (każda kolumna ma 2 wartości)
+        slownik = {('lin_sup_15'):(1,'red'), ('lin_res_15'):(1,'blue'),
+                   ('lin_sup_25'):(2,'brown'), ('lin_res_25'):(2,'green'),
+                   ('adj_lr_res_2'):(3,'red'), ('adj_lr_sup_2'):(3,'blue'),
+                   ('adj_lr_res_5'):(4,'red'), ('adj_lr_sup_5'):(4,'blue'),
+                   ('lr_res_2'):(3,'red'), ('lr_sup_2'):(3,'blue'),
+                   ('lr_res_5'):(4,'red'), ('lr_sup_5'):(4,'blue'),                   
+                   ('const_lr_res_2'):(3,'red'), ('const_lr_sup_2'):(3,'blue'),
+                   ('const_lr_res_5'):(4,'red'), ('const_lr_sup_5'):(4,'blue')}
+        #pętla po wszystkich elementach słownika
+        for column,(ii,jj) in slownik.items():
+            plt.scatter(temp_table.index, temp_table[column], s=ii, color=jj, linewidths=0)
+            plt.plot(temp_table[column], label=column)      
+
+    elif i > 200:
+        #tworzę słownik dla każdej wartości (każda kolumna ma 2 wartości)
+        slownik = {('lin_sup_25'):(1,'red'), ('lin_res_25'):(1,'blue'),
+                   ('lin_sup_50'):(2,'brown'), ('lin_res_50'):(2,'green'),
+                   ('adj_lr_res_2'):(3,'red'), ('adj_lr_sup_2'):(3,'blue'),
+                   ('adj_lr_res_5'):(4,'red'), ('adj_lr_sup_5'):(4,'blue'),
+                   ('lr_res_2'):(3,'red'), ('lr_sup_2'):(3,'blue'),
+                   ('lr_res_5'):(4,'red'), ('lr_sup_5'):(4,'blue'),
+                   ('const_lr_res_2'):(3,'red'), ('const_lr_sup_2'):(3,'blue'),
+                   ('const_lr_res_5'):(4,'red'), ('const_lr_sup_5'):(4,'blue')}
+        #pętla po wszystkich elementach słownika
+        for column,(ii,jj) in slownik.items():
+            plt.scatter(temp_table.index, temp_table[column], s=ii, color=jj, linewidths=0)
+            plt.plot(temp_table[column], label=column)
+
+    #rysuję wykres świecowy
+    up = temp_table[temp_table.Close >= temp_table.Open]
+    down = temp_table[temp_table.Close < temp_table.Open]
+    width = 0.9
+    width2 = .07
+    col1 = 'black'
+    col2 = 'steelblue'
+    plt.bar(up.index, up.Close-up.Open, width, bottom=up.Open, color=col1)
+    plt.bar(up.index, up.High-up.Close, width2, bottom=up.Close, color=col1)
+    plt.bar(up.index, up.Low-up.Open, width2, bottom=up.Open, color=col1)
+    plt.bar(down.index, down.Close-down.Open, width, bottom=down.Open, color=col2)
+    plt.bar(down.index, down.High-down.Open, width2, bottom=down.Open, color=col2)
+    plt.bar(down.index, down.Low-down.Close, width2, bottom=down.Close, color=col2)
+
+    #zmieniam ustawienie tekstu opisu osi x
+    plt.xticks(rotation=30, ha='right')
+    #generuję plik jpg
+    plt.savefig("fin_vettore"+str(i)+".jpg")
+
+
+
+    #MACD
+    #obliczenie short EMA
+    shortEMA = temp_table.Close.ewm(span=12, adjust=False).mean()
+    #obliczenie long EMA
+    longEMA = temp_table.Close.ewm(span=26, adjust=False).mean()
+    #obliczenie linii MACD
+    MACD = shortEMA - longEMA
+    #obliczenie linii sygnału
+    signal = MACD.ewm(span=9, adjust=False).mean()
+
+    #budowanie wyrkesu
+    #określam ten sam rozmiar co wykresu świecowego żeby zmieśły się jeden pod drugim
+    plt.figure(figsize=(14.2, 5.5))
+    plt.plot(temp_table.index, MACD, label='MACD', color='black', alpha=0.75) #alpha oznacza przymglenie linii
+    plt.plot(temp_table.index, signal, label='Signal line', color='blue', alpha=0.35) #alpha oznacza przymglenie linii
+    plt.xticks(rotation=45)
+    plt.legend(loc='upper left')
+    plt.savefig("MACD "+str(i)+".jpg")
+
+
+
+
+    #2. sposób
+    fig, axs = plt.subplots(3, 1, figsize=(14.2, 8),gridspec_kw={'height_ratios': [4, 1, 1]})
+
+    
+    #based on given period of time I'm building one chart with 3 inter-charts (candles, MACD, RSI)
+    if i < 100:
+        #I create a dictionary for each value (each column has 2 values)
+        slownik = {('lin_sup_5'):(1,'red'), ('lin_res_5'):(1,'blue'),
+                   ('adj_lr_res_2'):(2,'red'), ('adj_lr_sup_2'):(2,'blue'),
+                   ('lr_res_2'):(2,'red'), ('lr_sup_2'):(2,'blue'),
+                   ('const_lr_res_2'):(2,'red'), ('const_lr_sup_2'):(2,'blue')}
+        #lopp on every value in the dictionary
+        for column,(ii,jj) in slownik.items():
+            axs[0].scatter(temp_table.index, temp_table[column], s=ii, color=jj, linewidths=0)
+            axs[0].plot(temp_table[column], label=column, alpha=0.55)
+            
+    elif i == 100:
+        #I create a dictionary for each value (each column has 2 values)
+        slownik = {('lin_sup_10'):(1,'red'), ('lin_res_10'):(1,'blue'),
+                   ('lin_sup_15'):(2,'brown'), ('lin_res_15'):(2,'green'),
+                   ('adj_lr_res_2'):(3,'red'), ('adj_lr_sup_2'):(3,'blue'),
+                   ('lr_res_2'):(3,'red'), ('lr_sup_2'):(3,'blue'),
+                   ('const_lr_res_2'):(3,'red'), ('const_lr_sup_2'):(3,'blue')}
+        #lopp on every value in the dictionary
+        for column,(ii,jj) in slownik.items():
+            axs[0].scatter(temp_table.index, temp_table[column], s=ii, color=jj, linewidths=0)
+            axs[0].plot(temp_table[column], label=column, alpha=0.55)
+            
+    elif i == 150 or i == 200:
+        #I create a dictionary for each value (each column has 2 values)
+        slownik = {('lin_sup_15'):(1,'red'), ('lin_res_15'):(1,'blue'),
+                   ('lin_sup_25'):(2,'brown'), ('lin_res_25'):(2,'green'),
+                   ('adj_lr_res_2'):(3,'red'), ('adj_lr_sup_2'):(3,'blue'),
+                   ('adj_lr_res_5'):(4,'red'), ('adj_lr_sup_5'):(4,'blue'),
+                   ('lr_res_2'):(3,'red'), ('lr_sup_2'):(3,'blue'),
+                   ('lr_res_5'):(4,'red'), ('lr_sup_5'):(4,'blue'),                   
+                   ('const_lr_res_2'):(3,'red'), ('const_lr_sup_2'):(3,'blue'),
+                   ('const_lr_res_5'):(4,'red'), ('const_lr_sup_5'):(4,'blue')}
+        #lopp on every value in the dictionary
+        for column,(ii,jj) in slownik.items():
+            axs[0].scatter(temp_table.index, temp_table[column], s=ii, color=jj, linewidths=0)
+            axs[0].plot(temp_table[column], label=column, alpha=0.55)      
+
+    elif i > 200:
+        #I create a dictionary for each value (each column has 2 values)
+        slownik = {('lin_sup_25'):(1,'red'), ('lin_res_25'):(1,'blue'),
+                   ('lin_sup_50'):(2,'brown'), ('lin_res_50'):(2,'green'),
+                   ('adj_lr_res_2'):(3,'red'), ('adj_lr_sup_2'):(3,'blue'),
+                   ('adj_lr_res_5'):(4,'red'), ('adj_lr_sup_5'):(4,'blue'),
+                   ('lr_res_2'):(3,'red'), ('lr_sup_2'):(3,'blue'),
+                   ('lr_res_5'):(4,'red'), ('lr_sup_5'):(4,'blue'),
+                   ('const_lr_res_2'):(3,'red'), ('const_lr_sup_2'):(3,'blue'),
+                   ('const_lr_res_5'):(4,'red'), ('const_lr_sup_5'):(4,'blue')}
+        #lopp on every value in the dictionary
+        for column,(ii,jj) in slownik.items():
+            axs[0].scatter(temp_table.index, temp_table[column], s=ii, color=jj, linewidths=0)
+            axs[0].plot(temp_table[column], label=column, alpha=0.55)
+
+    #creating candlestick chart
+    up = temp_table[temp_table.Close >= temp_table.Open]
+    down = temp_table[temp_table.Close < temp_table.Open]
+    width = 0.9
+    width2 = 0.15
+    col1 = 'black'
+    col2 = 'steelblue'
+    axs[0].bar(up.index, up.Close-up.Open, width, bottom=up.Open, color=col1)
+    axs[0].bar(up.index, up.High-up.Close, width2, bottom=up.Close, color=col1)
+    axs[0].bar(up.index, up.Low-up.Open, width2, bottom=up.Open, color=col1)
+    axs[0].bar(down.index, down.Close-down.Open, width, bottom=down.Open, color=col2)
+    axs[0].bar(down.index, down.High-down.Open, width2, bottom=down.Open, color=col2)
+    axs[0].bar(down.index, down.Low-down.Close, width2, bottom=down.Close, color=col2)
+    for indeks in temp_table.index:
+        axs[0].axvline(indeks,0,linewidth=0.1,zorder=0, clip_on=False)
+    axs[0].set_title('EUR/USD (last ' + str(i) + ' minutes)')
+
+    
+    #MACD
+    #short EMA
+    shortEMA = temp_table.Close.ewm(span=12, adjust=False).mean()
+    #long EMA
+    longEMA = temp_table.Close.ewm(span=26, adjust=False).mean()
+    #MACD line
+    MACD = shortEMA - longEMA
+    #signal line
+    signal = MACD.ewm(span=9, adjust=False).mean()
+    
+    #creating the MACD chart
+    axs[1].plot(temp_table['Gmt time'], MACD, label='MACD', color='black', alpha=0.75) #alpha oznacza przymglenie linii
+    axs[1].plot(temp_table['Gmt time'], signal, label='Signal line', color='blue', alpha=0.35) #alpha oznacza przymglenie linii
+    #axs[1].set_xticklabels(temp_table['Gmt time'],rotation=45)
+
+
+    #RSI
+    axs[2].plot(temp_table['Gmt time'], temp_table['RSI'], label='RSI', color='orange', alpha=0.55) #alpha oznacza przymglenie linii
+    axs[2].axhline(0, linestyle='--', linewidth=0.1, color='white')
+    axs[2].axhline(30, linestyle='--', linewidth=0.5, color='grey')
+    axs[2].axhline(70, linestyle='--', linewidth=0.5, color='grey')
+    axs[2].axhline(100, linestyle='--', linewidth=0.1, color='white')
+    
+    fig.tight_layout()
+    plt.savefig("Candle + MACD "+str(i)+".jpg")
+
+    #saving jpg file with the chart
+    list_of_img.append("Candle + MACD "+str(i)+".jpg")
+
+
+
+
+
+
+    
+
 
 
 
@@ -709,6 +1153,51 @@ table_rsi['avg_loss'] = table_rsi['loss'].rolling(window=9).mean() #calculate a 
 table_rsi['rs'] = table_rsi['avg_gain'] / table_rsi['avg_loss'] #RS calculation
 
 table['RSI'] = 100 - (100 / (1 + table_rsi['rs'])) #calculate the RSI and paste into the main table
+
+
+
+
+
+#PDF
+#--------------------------------------#
+#creating PDF file which can be send via email
+
+W=210
+H=297
+pdf = FPDF() #domyślnie A4
+pdf.add_page()
+pdf.image('tło.png', 0, 0, W, H) #background
+pdf.image('pasek kolor.png', 0, 12.5, 105, 15)
+pdf.image('strona 1.png', 105, H-12, W-50, H)
+pdf.dashed_line(10, H-20, W-10, H-20, 0.1, 0)
+pdf.set_font("Courier", size = 20)
+pdf.cell(200, 20, txt = "ANALIZA FIN-VETTORE", ln = 1, align = 'A') #title
+pdf.set_font("Courier", size = 12)
+pdf.cell(100, 10, txt = "Computer Science",ln = 3, align = 'A')
+
+#adding the page for the charts
+pdf.add_page()
+pdf.image('tło.png', 0, 0, W, H) #background
+pdf.image('pasek kolor.png', 0, 12.5, 105, 15)
+pdf.image('strona 2.png', 105, H-12, W-50, H)
+pdf.dashed_line(10, H-20, W-10, H-20, 0.1, 0)
+pdf.set_font("Courier", size = 20)
+pdf.cell(200, 20, txt = "DATA VISUALIZATION", ln = 1, align = 'A')
+pdf.set_font("Courier", size = 12)
+
+#setting minimum position for the charts
+yy = 50
+
+#loop for every jpg file with the chart
+for i, img in enumerate(list_of_img):
+    if i % 2 == 0:
+        pdf.image(img, 10, yy, 92.5, 70)
+    else:
+        pdf.image(img, 105, yy, 92.5, 70)
+        yy = yy + 70 + 5
+    
+#saving PDF file
+pdf.output("FIN-VETTORE analysis.pdf")
 
 
 
